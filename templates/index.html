@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorted Steam Games</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Sorted Steam Games by Release Date</h1>
+    <ul>
+        {% for game in games %}
+            <li>{{ game.name }} - {{ game.release_date }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -12,7 +12,6 @@ from datetime import datetime
 from collections import OrderedDict
 
 STEAM_API_KEY = "REMOVED"
-#domain name = localhost
 STEAM_ID = "76561199096796604"
 STEAM_API_URL = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=REMOVED&steamid=76561199096796604&include_appinfo=true&include_played_free_games=true"
 
@@ -30,7 +29,7 @@ def get_release_date (game_id):
         # Parse the page content using BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Find the <tr> element with 'Release Date'
+        # Find the <div> element with 'Release Date'
         release_date_div = soup.find('div', class_='release_date')
         if release_date_div:
             date = release_date_div.find('div', class_='date')
@@ -66,7 +65,6 @@ def get_release_date (game_id):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data for app {game_id}: {e}")
         return "Unknown"
-
     '''
     '''
     #STEAM API METHOD (UNRELIABLE, GETS WRONG DATES)
@@ -153,23 +151,23 @@ def print_games(game_dict):
     for game_name, (game_id, release_date) in game_dict.items():
         print(f"{game_name}, Release Date: {release_date}")
 
-test_games = {
-    "PAYDAY 2": ("game_1", "Aug 13, 2013"),
-    "Batman™: Arkham Origins": ("game_2", "Oct 24, 2013"),
-    "The Talos Principle": ("game_3", "Dec 11, 2014"),
-    "Grand Theft Auto V Legacy": ("game_4", "Apr 13, 2015"),
-    "Beholder": ("game_5", "Nov 09, 2016"),
-    "The Forest": ("game_6", "Apr 30, 2018"),
-    "Rec Room": ("game_7", "Sep 02, 2021"),
-    "Grand Theft Auto V Enhanced": ("game_8", "Mar 04, 2025"),
-    "Borderlands 2 RU": ("game_9", "Unknown"),
-}
-print("GAMES BEFORE SORT")
-print("----------------------------------------------------")
-print_games(owned_games)
-print("----------------------------------------------------")
-print("GAMES AFTER SORT")
-print("----------------------------------------------------")
-print_games(sort_games(owned_games))
-print("----------------------------------------------------")
+# test_games = {
+#     "PAYDAY 2": ("game_1", "Aug 13, 2013"),
+#     "Batman™: Arkham Origins": ("game_2", "Oct 24, 2013"),
+#     "The Talos Principle": ("game_3", "Dec 11, 2014"),
+#     "Grand Theft Auto V Legacy": ("game_4", "Apr 13, 2015"),
+#     "Beholder": ("game_5", "Nov 09, 2016"),
+#     "The Forest": ("game_6", "Apr 30, 2018"),
+#     "Rec Room": ("game_7", "Sep 02, 2021"),
+#     "Grand Theft Auto V Enhanced": ("game_8", "Mar 04, 2025"),
+#     "Borderlands 2 RU": ("game_9", "Unknown"),
+# }
+# print("GAMES BEFORE SORT")
+# print("----------------------------------------------------")
+# print_games(owned_games)
+# print("----------------------------------------------------")
+# print("GAMES AFTER SORT")
+# print("----------------------------------------------------")
+# print_games(sort_games(owned_games))
+# print("----------------------------------------------------")
 
