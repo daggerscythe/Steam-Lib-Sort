@@ -19,7 +19,31 @@ STEAM_API_URL = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?k
 
 #Gets the release date of one game
 def get_release_date (game_id):
-    #SteamDB HTML Scrape method
+    #Scraping release date from Steam's game page
+    url = f"https://store.steampowered.com/app/{game_id}/"
+    try:
+        # Send GET request to the page
+        response = requests.get(url)
+        # Check if the request was successful
+        response.raise_for_status()
+        
+        # Parse the page content using BeautifulSoup
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Find the <tr> element with 'Release Date'
+        release_date_div = soup.find('div', class_='release_date')
+        if release_date_div:
+            date = release_date_div.find('div', class_='date')
+            if date:
+                return date.get_text(strip=True)
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP Error for app {game_id}: {err}")
+    except requests.exceptions.RequestException as err:
+        print(f"Error fetching data for app {game_id}: {err}")
+        
+    return None
+    ''' 
+    #SteamDB HTML Scrape method (Doesn't work, SteamDB blocks requests)
     url = f"https://steamdb.info/app/{game_id}/"
     try:
         # Send GET request to the page
@@ -39,13 +63,13 @@ def get_release_date (game_id):
             return release_date
         else:
             return "Unknown"
-    
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data for app {game_id}: {e}")
         return "Unknown"
 
     '''
-    #STEAM API METHOD (UNRELIABLE)
+    '''
+    #STEAM API METHOD (UNRELIABLE, GETS WRONG DATES)
     url = f"https://store.steampowered.com/api/appdetails?appids={game_id}"
     response = requests.get(url)
 
