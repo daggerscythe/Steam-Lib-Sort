@@ -127,7 +127,7 @@ def parse_release_date(release_date):
 
 
 #Method that sorts the games from oldest to newest releases
-def sort_games(game_dict):
+def sort_games(game_dict, order='oldest'):
     #Parse release dates into datetime objects
     for name, (game_id, release_date) in game_dict.items():
         #print(f"date before parsing: {release_date}") #For debugging
@@ -135,7 +135,8 @@ def sort_games(game_dict):
         #print(f"date after parsing: {release_date}") #FOr debugging
 
     #Sort the games by release date
-    sorted_games = dict(sorted(game_dict.items(), key=lambda item: (item[1][1] is None, item[1][1])))
+    reverse = order == 'newest'
+    sorted_games = dict(sorted(game_dict.items(), key=lambda item: (item[1][1] is None, item[1][1]), reverse=reverse))
 
     # Convert datetime back to string format
     for name, (game_id, release_date) in sorted_games.items():
@@ -168,6 +169,6 @@ def print_games(game_dict):
 # print("----------------------------------------------------")
 # print("GAMES AFTER SORT")
 # print("----------------------------------------------------")
-# print_games(sort_games(owned_games))
+print_games(sort_games(owned_games, order='oldest'))
 # print("----------------------------------------------------")
 
