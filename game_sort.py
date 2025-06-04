@@ -1,12 +1,7 @@
 import requests
-import time
-import json
 from bs4 import BeautifulSoup
 import pandas as pd
 import datetime
-import sqlite3
-from PyQt6.QtWidgets import QApplication, QWidget
-import flask
 import matplotlib.pyplot as plt
 from datetime import datetime
 from collections import OrderedDict
@@ -110,7 +105,7 @@ def get_steam_library (api, id):
     
 
 #Stores the results
-owned_games = get_steam_library(STEAM_API_KEY, STEAM_ID)
+# owned_games = get_steam_library(STEAM_API_KEY, STEAM_ID)
 
 #Changes release date to datetime format for sorting
 def parse_release_date(release_date):
@@ -169,6 +164,6 @@ def print_games(game_dict):
 # print("----------------------------------------------------")
 # print("GAMES AFTER SORT")
 # print("----------------------------------------------------")
-print_games(sort_games(owned_games, order='oldest'))
+# print_games(sort_games(owned_games, order='oldest'))
 # print("----------------------------------------------------")
 
