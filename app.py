@@ -6,6 +6,8 @@ from game_sort import sort_games, get_steam_library
 # Only needed for access to command line arguments
 import sys
 
+games = {}
+
 # Worker class
 class getGames(QObject):
     finished = pyqtSignal()
@@ -20,8 +22,7 @@ class getGames(QObject):
         print(steam_id)
         print("Getting the games...")
         games = get_steam_library(api_key, steam_id)
-        self.result.emit("Game data loaded!")
-        print(games)
+        self.result.emit(str(games))
         self.finished.emit()
 
 # Main class
