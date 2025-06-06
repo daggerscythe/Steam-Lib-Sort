@@ -109,6 +109,8 @@ def get_steam_library (api, id):
 
 #Changes release date to datetime format for sorting
 def parse_release_date(release_date):
+    if isinstance(release_date, datetime):
+        return release_date # Already parsed
     if release_date in ['Unknown', 'To be announced', ''] or release_date is None:
         return None
     
@@ -122,7 +124,7 @@ def parse_release_date(release_date):
 
 
 #Method that sorts the games from oldest to newest releases
-def sort_games(game_dict, order='oldest'):
+def sort_games(game_dict, order):
     #Parse release dates into datetime objects
     for name, (game_id, release_date) in game_dict.items():
         #print(f"date before parsing: {release_date}") #For debugging
@@ -130,9 +132,11 @@ def sort_games(game_dict, order='oldest'):
         #print(f"date after parsing: {release_date}") #FOr debugging
 
     #Sort the games by release date
-    reverse = order == 'newest'
-    sorted_games = dict(sorted(game_dict.items(), key=lambda item: (item[1][1] is None, item[1][1]), reverse=reverse))
-
+    if (order == "oldest"):
+        sorted_games = dict(sorted(game_dict.items(), key=lambda item: (item[1][1] is None, item[1][1]), reverse=False))
+    else:
+        sorted_games = dict(sorted(game_dict.items(), key=lambda item: (item[1][1] is None, item[1][1]), reverse=True))
+ 
     # Convert datetime back to string format
     for name, (game_id, release_date) in sorted_games.items():
         #print(f"Date before converting back: {release_date}") #For debugging
