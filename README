@@ -1,11 +1,9 @@
 Main TODO
-Display games on home page
-Add 2 different sort options
-Display sorted games
-Store the game dict locally so it doesn't run get_games each sort
+
 
 
 TODO (misc)
+Add most common release year
 Figure out the font issue
 Figure out how to move things around
 Add log in/log out
