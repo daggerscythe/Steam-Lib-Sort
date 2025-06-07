@@ -1,12 +1,15 @@
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QWidget, QPushButton, QMainWindow, QLabel, QVBoxLayout, QLineEdit, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox, QComboBox
 from PyQt5.QtCore import Qt, QSize, QThread, QObject, pyqtSignal
-from PyQt5.QtGui import QFont, QFontDatabase, QMovie
+from PyQt5.QtGui import QFont, QMovie
 from game_sort import sort_games, get_steam_library
 
 # Only needed for access to command line arguments
 import sys
 import json
 import os
+
+# STEAM_API_KEY = "REMOVED"
+# STEAM_ID = "76561199096796604"
 
 # Worker class
 class getGames(QObject):
@@ -261,6 +264,3 @@ window = MainWindow()
 window.show() #WINDOWS ARE HIDDEN BY DEFAULT
 
 app.exec() #starts the event loop
-
-# STEAM_API_KEY = "REMOVED"
-# STEAM_ID = "76561199096796604"

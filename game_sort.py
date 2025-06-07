@@ -1,10 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import datetime
-import matplotlib.pyplot as plt
 from datetime import datetime
-from collections import OrderedDict
 
 STEAM_API_KEY = "REMOVED"
 STEAM_ID = "76561199096796604"
@@ -102,10 +99,6 @@ def get_steam_library (api, id):
     else:
         print(f"Error: {response.status_code}")
         return {}
-    
-
-#Stores the results
-# owned_games = get_steam_library(STEAM_API_KEY, STEAM_ID)
 
 #Changes release date to datetime format for sorting
 def parse_release_date(release_date):
@@ -162,12 +155,3 @@ def print_games(game_dict):
 #     "Grand Theft Auto V Enhanced": ("game_8", "Mar 04, 2025"),
 #     "Borderlands 2 RU": ("game_9", "Unknown"),
 # }
-# print("GAMES BEFORE SORT")
-# print("----------------------------------------------------")
-# print_games(owned_games)
-# print("----------------------------------------------------")
-# print("GAMES AFTER SORT")
-# print("----------------------------------------------------")
-# print_games(sort_games(owned_games, order='oldest'))
-# print("----------------------------------------------------")
-
