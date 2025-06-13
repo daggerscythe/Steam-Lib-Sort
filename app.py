@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication, QStackedWidget, QWidget, QPushButton, QMainWindow, QLabel, QVBoxLayout, QLineEdit, QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox, QComboBox
 from PyQt5.QtCore import Qt, QSize, QThread, QObject, pyqtSignal
-from PyQt5.QtGui import QFont, QMovie
+from PyQt5.QtGui import QFont, QFontDatabase, QMovie
 from game_sort import sort_games, get_steam_library
 
 # Only needed for access to command line arguments
@@ -10,6 +10,7 @@ import os
 
 # STEAM_API_KEY = "REMOVED"
 # STEAM_ID = "76561199096796604"
+
 
 # Worker class
 class getGames(QObject):
@@ -32,6 +33,7 @@ class getGames(QObject):
             self.result.emit({})
         finally:
             self.finished.emit()
+            print("Library loaded!")
 
 # Main class
 class MainWindow(QMainWindow):
@@ -39,9 +41,10 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Window settings
-        self.setWindowTitle("Steam Library Sort")
+        self.setWindowTitle("STEAM LIBRARY SORTER")
         self.setMinimumSize(QSize(600, 800))
         self.setStyleSheet("background-color: #1b3448")
+        QFontDatabase.addApplicationFont("MotivaSansRegular.woff.ttf")
 
         # Stacked Widgets
         self.stack = QStackedWidget()
@@ -58,29 +61,29 @@ class MainWindow(QMainWindow):
         loading_layout = QVBoxLayout()
 
         # Login Header
-        login_header = QLabel("Steam Library Sorter")
-        login_header.setFont(QFont("Times New Roman", 30))
+        login_header = QLabel("STEAM LIBRARY SORTER")
+        login_header.setFont(QFont("Motiva Sans", 30))
         login_header.setAlignment(Qt.AlignTop)
         login_header.setStyleSheet("color: white;")
         login_layout.addWidget(login_header)
 
         # Home Header
-        home_header = QLabel("Steam Library Sorter")
-        home_header.setFont(QFont("Times New Roman", 30))
+        home_header = QLabel("STEAM LIBRARY SORTER")
+        home_header.setFont(QFont("Motiva Sans", 30))
         home_header.setAlignment(Qt.AlignTop)
         home_header.setStyleSheet("color: white;")
         home_layout.addWidget(home_header)
 
         # Loading Header
-        loading_header = QLabel("Steam Library Sorter")
-        loading_header.setFont(QFont("Times New Roman", 30))
+        loading_header = QLabel("STEAM LIBRARY SORTER")
+        loading_header.setFont(QFont("Motiva Sans", 30))
         loading_header.setAlignment(Qt.AlignTop)
         loading_header.setStyleSheet("color: white;")
         loading_layout.addWidget(loading_header)
 
         # Info line
         info = QLabel("Enter your API key and user ID to begin sorting:")
-        info.setFont(QFont("Times New Roman", 15))
+        info.setFont(QFont("Motiva Sans", 15))
         info.setStyleSheet("color: white")
         login_layout.addWidget(info)
 
@@ -107,7 +110,7 @@ class MainWindow(QMainWindow):
 
         # Loading text
         loading_text = QLabel("Getting your games...")
-        loading_text.setFont(QFont("Times New Roman", 20))
+        loading_text.setFont(QFont("Motiva Sans", 20))
         loading_text.setStyleSheet("color: white")
         loading_text.setAlignment(Qt.AlignCenter)
         loading_layout.addWidget(loading_text) 
@@ -123,8 +126,10 @@ class MainWindow(QMainWindow):
         self.sort_menu = QComboBox()
         self.sort_menu.addItems(["Oldest to Newest", "Newest to Oldest"])
         self.sort_menu.setStyleSheet("background-color: #77afdb; color: white;")
+        self.sort_menu.setFont(QFont("Motiva Sans"))
         self.sort_button = QPushButton("Sort!")
         self.sort_button.setStyleSheet("background-color: #77afdb; color: white;")
+        self.sort_button.setFont(QFont("Motiva Sans"))
         self.sort_button.clicked.connect(self.sort)
         home_layout.addWidget(self.sort_menu)
         home_layout.addWidget(self.sort_button)
@@ -137,13 +142,13 @@ class MainWindow(QMainWindow):
                                  QHeaderView::section{
                                     background-color: #77afdb;
                                     color:white;
-                                    font-family: 'Times New Roman';
+                                    font-family: 'Motiva Sans';
                                     font-size: 16px;
                                  }
                                  QTableWidget{
                                     color:white;
                                     background-color: #1b3448;
-                                    font-family: 'Times New Roman';
+                                    font-family: 'Motiva Sans';
                                     font-size: 16px;
                                  }
                                 """)
@@ -173,16 +178,17 @@ class MainWindow(QMainWindow):
                                   QMessageBox{
                                     background-color: #1b3448;
                                     color: white;
-                                    font: 14pt "Times New Roman";
+                                    font: 14pt "Motiva Sans";
                                   }
                                   QLabel{
                                     color: white;
-                                    font: 14pt "Times New Roman";
+                                    font: 14pt "Motiva Sans";
                                   }
                                   QPushButton {
                                     background-color: #77afdb;
                                     color: white;
                                     padding: 5px;
+                                    font: 14pt "Motiva Sans";
                                   } 
                 """)
                 response = msg.exec()
@@ -204,7 +210,9 @@ class MainWindow(QMainWindow):
         with open("user_input.txt", "w") as f:
             f.write(api_key + "\n")
             f.write(steam_id)
-        print("Input saved!")
+        print("Input saved:")
+        print("API: " + self.API_key)
+        print("Steam ID: " + self.userID)
 
     def start_fetch(self):
         if os.path.exists("games.json"):

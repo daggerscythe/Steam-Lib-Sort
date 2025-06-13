@@ -92,6 +92,7 @@ def get_steam_library (api, id):
         for game in games:
             game_id = game.get("appid")
             name = game.get("name")
+            print(name, game_id)
             if name and game_id:
                 release_date = get_release_date(game_id)
                 game_dict[name] = (game_id, release_date)
