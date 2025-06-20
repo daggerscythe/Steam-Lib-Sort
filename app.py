@@ -15,7 +15,7 @@ import os
 # Worker class
 class getGames(QObject):
     finished = pyqtSignal()
-    result = pyqtSignal(dict)
+    result = pyqtSignal(dict, int)
 
     def run(self):
         try:
@@ -26,11 +26,11 @@ class getGames(QObject):
             self.api_key = lines[0].strip()
             self.steam_id = lines[1].strip()
             print("Getting the games...")
-            games = get_steam_library(self.api_key, self.steam_id)
-            self.result.emit(games)
+            games, status_code = get_steam_library(self.api_key, self.steam_id)
+            self.result.emit(games, status_code)
         except Exception as e:
             print("error getting games: ", e)
-            self.result.emit({})
+            self.result.emit({}, 500)
         finally:
             self.finished.emit()
             print("Library loaded!")
@@ -121,6 +121,7 @@ class MainWindow(QMainWindow):
         spinner_label.setMovie(self.spinner)
         spinner_label.setAlignment(Qt.AlignCenter)
         loading_layout.addWidget(spinner_label)
+        loading_layout.setAlignment(Qt.AlignCenter)
 
         # Sorting dropdown
         self.sort_menu = QComboBox()
@@ -174,6 +175,12 @@ class MainWindow(QMainWindow):
                 msg.setWindowTitle("Use saved credentials?")
                 msg.setText("Do you want to use your last saved API key and ID?")
                 msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+                yesBtn = msg.button(QMessageBox.Yes)
+                noBtn = msg.button(QMessageBox.No)
+                yesBtn.setStyleSheet("background-color: #77afdb; color: white; font: 14pt 'Motiva Sans'; padding: 5px;")
+                noBtn.setStyleSheet("background-color: #77afdb; color: white; font: 14pt 'Motiva Sans'; padding: 5px;")
+                yesBtn.setFixedSize(120, 40)
+                noBtn.setFixedSize(120, 40)
                 msg.setStyleSheet("""
                                   QMessageBox{
                                     background-color: #1b3448;
@@ -184,17 +191,11 @@ class MainWindow(QMainWindow):
                                     color: white;
                                     font: 14pt "Motiva Sans";
                                   }
-                                  QPushButton {
-                                    background-color: #77afdb;
-                                    color: white;
-                                    padding: 5px;
-                                    font: 14pt "Motiva Sans";
-                                  } 
                 """)
                 response = msg.exec()
                 if response == QMessageBox.Yes:
                     self.auto_login()
-                else:
+                elif response == QMessageBox.No and os.path.exists("games.json"):
                     os.remove("games.json")
 
     # Auto login
@@ -211,8 +212,8 @@ class MainWindow(QMainWindow):
             f.write(api_key + "\n")
             f.write(steam_id)
         print("Input saved:")
-        print("API: " + self.API_key)
-        print("Steam ID: " + self.userID)
+        print("API: " + self.API_key.text())
+        print("Steam ID: " + self.userID.text())
 
     def start_fetch(self):
         if os.path.exists("games.json"):
@@ -239,23 +240,45 @@ class MainWindow(QMainWindow):
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)
-            self.worker.result.connect(self.display_results)
+            self.worker.result.connect(lambda games, code: self.display_results(games, code))
 
             self.thread.start()
 
-    def display_results(self, games):
+    def display_results(self, games, status_code):
         self.spinner.stop()
+        if not games:
+            print("Empty dict, no games to save")
+            self.stack.setCurrentWidget(self.login_page)
+            error = QMessageBox(self)
+            error.setWindowTitle("Error")
+            error.setText(f"Failed to fetch games. Steam API returned error code {status_code}. Please try again")
+            error.setIcon(QMessageBox.Warning)
+            error.setStandardButtons(QMessageBox.Ok)
+            okBtn = error.button(QMessageBox.Ok)
+            okBtn.setStyleSheet("background-color: #77afdb; color: white; font: 14pt 'Motiva Sans'; padding: 5px;")
+            okBtn.setFixedSize(120, 40)
+            error.setStyleSheet("""
+                                  QMessageBox{
+                                    background-color: #1b3448;
+                                    color: white;
+                                    font: 14pt "Motiva Sans";
+                                  }
+                                  QLabel{
+                                    color: white;
+                                    font: 14pt "Motiva Sans";
+                                  }
+                """)
+            error.exec()
+            return
+        
         self.stack.setCurrentWidget(self.home_page)
         self.games = games
         self.table.setRowCount(len(games))
         for row, (title, (appid, release_date)) in enumerate(games.items()):
             self.table.setItem(row, 0, QTableWidgetItem(title))
             self.table.setItem(row, 1, QTableWidgetItem(release_date))
-        if games:
-            with open("games.json", "w", encoding="utf-8") as f:
-                json.dump(games, f, indent=2)
-        else:
-            print("Empty dict, no games to save")
+        with open("games.json", "w", encoding="utf-8") as f:
+            json.dump(games, f, indent=2)
 
     def sort(self):
         selected = self.sort_menu.currentText()
@@ -267,7 +290,6 @@ class MainWindow(QMainWindow):
             self.display_results(sorted_games)       
         
 app = QApplication(sys.argv) # if not using command line arguments, you can use QApplication([])
-
 window = MainWindow()
 window.show() #WINDOWS ARE HIDDEN BY DEFAULT
 

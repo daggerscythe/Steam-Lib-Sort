@@ -84,22 +84,22 @@ def get_steam_library (api, id):
 
     response = requests.get(STEAM_API_URL, params = params)
 
-    if response.status_code == 200:
-        game_dict = {}
-        data = response.json()
-        games = data.get("response", {}).get("games", []) #Gets the games
-
-        for game in games:
-            game_id = game.get("appid")
-            name = game.get("name")
-            print(name, game_id)
-            if name and game_id:
-                release_date = get_release_date(game_id)
-                game_dict[name] = (game_id, release_date)
-        return game_dict
-    else:
+    if response.status_code != 200:
         print(f"Error: {response.status_code}")
-        return {}
+        return {}, response.status_code
+
+    game_dict = {}
+    data = response.json()
+    games = data.get("response", {}).get("games", []) #Gets the games
+
+    for game in games:
+        game_id = game.get("appid")
+        name = game.get("name")
+        print(name, game_id)
+        if name and game_id:
+            release_date = get_release_date(game_id)
+            game_dict[name] = (game_id, release_date)
+    return game_dict, 200
 
 #Changes release date to datetime format for sorting
 def parse_release_date(release_date):
