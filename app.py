@@ -11,6 +11,10 @@ import os
 # STEAM_API_KEY = "REMOVED"
 # STEAM_ID = "76561199096796604"
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path) # Running as .exe
+    return os.path.join(os.path.abspath("."), relative_path) # Running from .py 
 
 # Worker class
 class getGames(QObject):
@@ -19,7 +23,7 @@ class getGames(QObject):
 
     def run(self):
         try:
-            with open("user_input.txt", "r") as f:
+            with open(resource_path("user_input.txt"), "r") as f:
                 lines = [line.strip() for line in f.readlines()]
             if len(lines) < 2 or not lines[0] or not lines[1]:
                 raise ValueError("user_input.txt is missing API key or Steam ID")
@@ -44,7 +48,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("STEAM LIBRARY SORTER")
         self.setMinimumSize(QSize(600, 800))
         self.setStyleSheet("background-color: #1b3448")
-        QFontDatabase.addApplicationFont("MotivaSansRegular.woff.ttf")
+        QFontDatabase.addApplicationFont(resource_path("MotivaSansRegular.woff.ttf"))
 
         # Stacked Widgets
         self.stack = QStackedWidget()
@@ -117,7 +121,7 @@ class MainWindow(QMainWindow):
 
         # Loading spinner gif
         spinner_label = QLabel()
-        self.spinner = QMovie("spinner.gif")
+        self.spinner = QMovie(resource_path("spinner.gif"))
         spinner_label.setMovie(self.spinner)
         spinner_label.setAlignment(Qt.AlignCenter)
         loading_layout.addWidget(spinner_label)
@@ -165,7 +169,7 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentWidget(self.login_page)
         self.setCentralWidget(self.stack)
 
-        with open("user_input.txt", "r") as f:
+        with open(resource_path("user_input.txt"), "r") as f:
             lines = [line.strip() for line in f.readlines()]
             if len(lines) >= 2 and lines[0] and lines[1]:
                 self.api_key = lines[0]
@@ -195,8 +199,8 @@ class MainWindow(QMainWindow):
                 response = msg.exec()
                 if response == QMessageBox.Yes:
                     self.auto_login()
-                elif response == QMessageBox.No and os.path.exists("games.json"):
-                    os.remove("games.json")
+                elif response == QMessageBox.No and os.path.exists(resource_path("games.json")):
+                    os.remove(resource_path("games.json"))
 
     # Auto login
     def auto_login(self):
@@ -208,7 +212,7 @@ class MainWindow(QMainWindow):
     def save_input(self):
         api_key = self.API_key.text()
         steam_id = self.userID.text()
-        with open("user_input.txt", "w") as f:
+        with open(resource_path("user_input.txt"), "w") as f:
             f.write(api_key + "\n")
             f.write(steam_id)
         print("Input saved:")
@@ -216,12 +220,12 @@ class MainWindow(QMainWindow):
         print("Steam ID: " + self.userID.text())
 
     def start_fetch(self):
-        if os.path.exists("games.json"):
-            with open("games.json", "r", encoding="utf-8") as f:
+        if os.path.exists(resource_path("games.json")):
+            with open(resource_path("games.json"), "r", encoding="utf-8") as f:
                 games = json.load(f)
             if games:
                 cleaned_games = sort_games(games, "oldest")
-                self.display_results(cleaned_games)
+                self.display_results(cleaned_games, 200)
                 return
             else:
                 print("games.json was empty")
@@ -277,17 +281,17 @@ class MainWindow(QMainWindow):
         for row, (title, (appid, release_date)) in enumerate(games.items()):
             self.table.setItem(row, 0, QTableWidgetItem(title))
             self.table.setItem(row, 1, QTableWidgetItem(release_date))
-        with open("games.json", "w", encoding="utf-8") as f:
+        with open(resource_path("games.json"), "w", encoding="utf-8") as f:
             json.dump(games, f, indent=2)
 
     def sort(self):
         selected = self.sort_menu.currentText()
         if selected == "Oldest to Newest":
             sorted_games = sort_games(self.games, "oldest")
-            self.display_results(sorted_games)
+            self.display_results(sorted_games, 200)
         else:
             sorted_games = sort_games(self.games, "newest")
-            self.display_results(sorted_games)       
+            self.display_results(sorted_games, 200)       
         
 app = QApplication(sys.argv) # if not using command line arguments, you can use QApplication([])
 window = MainWindow()
