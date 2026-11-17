@@ -8,9 +8,6 @@ import sys
 import json
 import os
 
-# STEAM_API_KEY = "REMOVED"
-# STEAM_ID = "76561199096796604"
-
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path) # Running as .exe

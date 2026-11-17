@@ -8,8 +8,7 @@ a = Analysis(
     datas=[
 		('spinner.gif', '.'),
 		('MotivaSansRegular.woff.ttf', '.'),
-		('user_input.txt', '.'),
-		('games.json', '.')	
+		('user_input.txt', '.')
 	],
     hiddenimports=[],
     hookspath=[],

@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import datetime
 from datetime import datetime
 
-STEAM_API_KEY = "REMOVED"
 STEAM_ID = "76561199096796604"
 STEAM_API_URL = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=REMOVED&steamid=76561199096796604&include_appinfo=true&include_played_free_games=true"
 
